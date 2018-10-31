@@ -19,7 +19,12 @@ namespace MemoCheckerAutofac
 
         public void CheckNow()
         {
+            var overdueMemos = memos.Where(m => m.DueTime < DateTime.Now);
 
+            foreach (var memo in overdueMemos)
+            {
+                notifier.MemoIsDue(memo);
+            }
         }
     }
 }
