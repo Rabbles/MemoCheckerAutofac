@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
+using Container = Autofac.Core.Container;
 
 namespace MemoCheckerAutofac
 {
@@ -17,10 +21,20 @@ namespace MemoCheckerAutofac
             }.AsQueryable();
 
             // Direct object creation
-            var checker = new MemoChecker(memos, new PrintingNotifier(Console.Out));
-            checker.CheckNow();
+            //var checker = new MemoChecker(memos, new PrintingNotifier(Console.Out));
+            //checker.CheckNow();
 
+            //Autofac
+            var builder = new ContainerBuilder();
+            builder.Register(c => new MemoChecker(c.Resolve<IQueryable<Memo>>(), c.Resolve<IMemoDueNotifier>()));
+            builder.Register(c => new PrintingNotifier(c.Resolve<TextWriter>())).As<IMemoDueNotifier>();
+            builder.RegisterInstance(memos);
+            builder.RegisterInstance(Console.Out).As<TextWriter>().ExternallyOwned();
 
+            using (var container = builder.Build())
+            {
+                container.Resolve<MemoChecker>().CheckNow();
+            }
         }
     }
 }
