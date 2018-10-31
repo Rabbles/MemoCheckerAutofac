@@ -17,7 +17,7 @@ namespace MemoCheckerAutofac
         }
         public void MemoIsDue(Memo memo)
         {
-            writer.WriteLine($"Memo {memo.Title} is due.");
+            writer.WriteLine($"Memo: {memo.Title} is due.");
         }
     }
 }
